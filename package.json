@@ -1,0 +1,50 @@
+{
+  "name": "EscalationManagement",
+  "version": "1.0.0",
+  "description": "A simple CAP project.",
+  "repository": "<Add your repository here>",
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "@sap-cloud-sdk/http-client": "^3.6.0",
+    "@sap/cds": "^7.3.0",
+    "@sap/cds-hana": "^2",
+    "@sap/hana-client": "^2.18.24",
+    "@sap/xsenv": "^4.0.0",
+    "@sap/xssec": "^3.3.5",
+    "express": "^4",
+    "node": "^18.18.0",
+    "npm": "^10.2.0",
+    "passport": "^0.6.0"
+  },
+  "devDependencies": {
+    "@cap-js/sqlite": "^1",
+    "@sap/cds-dk": "^7"
+  },
+  "scripts": {
+    "start": "cds-serve"
+  },
+  "cds": {
+    "requires": {
+      "db": "hana",
+      "auth": {
+        "[production]": {
+          "kind": "dummy-auth"
+        },
+        "[development]": {
+          "kind": "dummy-auth"
+        },
+        "hana": {
+          "deploy-format": "hdbtable"
+        }
+      },
+      "API_PURCHASEORDER_PROCESS_SRV": {
+        "kind": "odata-v2",
+        "model": "srv/external/API_PURCHASEORDER_PROCESS_SRV",
+        "credentials": {
+          "destination": "SandboxPO"
+        }
+      }
+    }
+  }
+}
