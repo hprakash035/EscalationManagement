@@ -10,10 +10,11 @@
     "@sap/cds": "^7.3.0",
     "@sap/cds-hana": "^2",
     "@sap/hana-client": "^2.18.24",
-    "@sap/xsenv": "^4.0.0",
+    "@sap/textmining": "^1.1.6",
     "@sap/xssec": "^3.3.5",
     "express": "^4",
-    "node": "^18.18.0",
+    "hdb": "^0.19.6",
+    "node": "^20.7.0",
     "npm": "^10.2.0",
     "passport": "^0.6.0"
   },
