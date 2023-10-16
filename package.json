@@ -1,51 +1,60 @@
 {
-  "name": "EscalationManagement",
-  "version": "1.0.0",
-  "description": "A simple CAP project.",
-  "repository": "<Add your repository here>",
-  "license": "UNLICENSED",
-  "private": true,
-  "dependencies": {
-    "@sap-cloud-sdk/http-client": "^3.6.0",
-    "@sap/cds": "^7.3.0",
-    "@sap/cds-hana": "^2",
-    "@sap/hana-client": "^2.18.24",
-    "@sap/textmining": "^1.1.6",
-    "@sap/xssec": "^3.3.5",
-    "express": "^4",
-    "hdb": "^0.19.6",
-    "node": "^20.7.0",
-    "npm": "^10.2.0",
-    "passport": "^0.6.0"
-  },
-  "devDependencies": {
-    "@cap-js/sqlite": "^1",
-    "@sap/cds-dk": "^7"
-  },
-  "scripts": {
-    "start": "cds-serve"
-  },
-  "cds": {
-    "requires": {
-      "db": "hana",
-      "auth": {
-        "[production]": {
-          "kind": "dummy-auth"
-        },
-        "[development]": {
-          "kind": "dummy-auth"
-        },
-        "hana": {
-          "deploy-format": "hdbtable"
+    "name": "EscalationManagement",
+    "version": "1.0.0",
+    "description": "A simple CAP project.",
+    "repository": "<Add your repository here>",
+    "license": "UNLICENSED",
+    "private": true,
+    "dependencies": {
+        "@sap-cloud-sdk/http-client": "^3.6.0",
+        "@sap/cds": "^7.3.0",
+        "@sap/cds-hana": "^2",
+        "@sap/hana-client": "^2.18.24",
+        "@sap/textmining": "^1.1.6",
+        "@sap/xssec": "^3.3.5",
+        "express": "^4",
+        "hdb": "^0.19.6",
+        "node": "^20.7.0",
+        "npm": "^10.2.0",
+        "passport": "^0.6.0"
+    },
+    "devDependencies": {
+        "@cap-js/sqlite": "^1",
+        "@sap/cds-dk": "^7",
+        "@sap/ux-specification": "^1.108.16",
+        "rimraf": "^3.0.2"
+    },
+    "scripts": {
+        "start": "cds-serve",
+        "watch-escalationfrontend": "cds watch --open escalationfrontend/webapp/index.html?sap-ui-xx-viewCache=false",
+        "undeploy": "cf undeploy EscalationManagement --delete-services --delete-service-keys --delete-service-brokers",
+        "build": "rimraf resources mta_archives && mbt build --mtar archive",
+        "deploy": "cf deploy mta_archives/archive.mtar --retries 1"
+    },
+    "cds": {
+        "requires": {
+            "db": "hana",
+            "auth": {
+                "[production]": {
+                    "kind": "dummy-auth"
+                },
+                "[development]": {
+                    "kind": "dummy-auth"
+                },
+                "hana": {
+                    "deploy-format": "hdbtable"
+                }
+            },
+            "API_PURCHASEORDER_PROCESS_SRV": {
+                "kind": "odata-v2",
+                "model": "srv/external/API_PURCHASEORDER_PROCESS_SRV",
+                "credentials": {
+                    "destination": "SandboxPO"
+                }
+            }
         }
-      },
-      "API_PURCHASEORDER_PROCESS_SRV": {
-        "kind": "odata-v2",
-        "model": "srv/external/API_PURCHASEORDER_PROCESS_SRV",
-        "credentials": {
-          "destination": "SandboxPO"
-        }
-      }
-    }
-  }
+    },
+    "sapux": [
+        "app/escalationfrontend"
+    ]
 }

@@ -1,24 +1,133 @@
-const cds = require('@sap/cds'); 
+const cds = require('@sap/cds');
+
+
+
 module.exports = cds.service.impl(async function () {
-this.on('resolve', async (req) => {
-const tx = cds.tx(req);
-await tx.run(
-UPDATE('Escalations')
-.set({ 'Status_code': 'CMP' })
-.where({ ID: req.params[0].ID })
-);
-}
-)
-this.on("READ", "PurchaseOrders", async (req) => {
-    let srv = await cds.connect.to("API_PURCHASEORDER_PROCESS_SRV");
-    let result = await srv.tx(req).send(
-        {
-            query: req.query,
-            headers: {
-                apiKey: process.env.apiKey
+
+
+
+
+
+
+
+    this.on('resolve', async (req) => {
+
+
+
+        const tx = cds.tx(req);
+
+
+
+        const res = await tx.run(
+
+
+
+            UPDATE('my.dataModel.Escalations')
+
+
+
+                .set({ 'Status_code': 'CMP' })
+
+
+
+                .where({ ID: req.params[0].ID })
+
+
+
+        );
+
+
+
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    this.on('READ', 'PurchaseOrders', async (req) => {
+
+
+
+        const po = await cds.connect.to('API_PURCHASEORDER_PROCESS_SRV');
+
+
+
+        let result = po.tx(req).send(
+
+
+
+            {
+
+
+
+                query: req.query,
+
+
+
+                headers: {
+
+
+
+                    apiKey: process.env.apiKey
+
+
+
+                }
+
+
+
             }
-        }
-    );
-    return result;
-});
+
+
+
+        );
+
+
+
+        return result;
+
+
+
+    });
+
+
+
+    this.before('NEW', 'Escalations', (req) => {
+
+
+
+        req.data.Status_code = 'INP';
+
+
+
+    });
+
+
+
+    this.before('CREATE', 'Escalations', (req) => {
+
+
+
+        // After creation, update the status to 'In Progress'
+
+
+
+        req.data.status_code = 'INP';
+
+
+
+    });
+
+
+
 });

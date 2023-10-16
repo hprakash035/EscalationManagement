@@ -1,46 +1,86 @@
-_schema-version: '3.1'
+_schema-version: "3.1"
 ID: EscalationManagement
+description: A simple CAP project.
 version: 1.0.0
-description: "A simple CAP project."
+modules:
+- name: EscalationManagement-srv
+  type: nodejs
+  path: gen/srv
+  requires:
+  - name: EscalationManagement-db
+  - name: EscalationManagement-destination
+  provides:
+  - name: srv-api
+    properties:
+      srv-url: ${default-url}
+  parameters:
+    buildpack: nodejs_buildpack
+  build-parameters:
+    builder: npm
+- name: EscalationManagement-db-deployer
+  type: hdb
+  path: gen/db
+  requires:
+  - name: EscalationManagement-db
+  parameters:
+    buildpack: nodejs_buildpack
+- name: EscalationManagement-app-content
+  type: com.sap.application.content
+  path: .
+  requires:
+  - name: EscalationManagement-repo-host
+    parameters:
+      content-target: true
+  build-parameters:
+    build-result: resources
+    requires:
+    - artifacts:
+      - comescalationescalationfrontend.zip
+      name: comescalationescalationfrontend
+      target-path: resources/
+- name: comescalationescalationfrontend
+  type: html5
+  path: app/escalationfrontend
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+resources:
+- name: EscalationManagement-db
+  type: com.sap.xs.hdi-container
+  parameters:
+    service: hana
+    service-plan: hdi-shared
+- name: EscalationManagement-destination
+  type: org.cloudfoundry.managed-service
+  parameters:
+    config:
+      HTML5Runtime_enabled: false
+      init_data:
+        instance:
+          destinations:
+          - Authentication: NoAuthentication
+            Name: ui5
+            ProxyType: Internet
+            Type: HTTP
+            URL: https://ui5.sap.com
+          existing_destinations_policy: update
+    service: destination
+    service-plan: lite
+- name: EscalationManagement-repo-host
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-name: EscalationManagement-html5-srv
+    service-plan: app-host
 parameters:
+  deploy_mode: html5-repo
   enable-parallel-deployments: true
 build-parameters:
   before-all:
-    - builder: custom
-      commands:
-        - npx cds build --production
-modules:
-  - name: EscalationManagement-srv
-    type: nodejs
-    path: gen/srv
-    parameters:
-      buildpack: nodejs_buildpack
-    build-parameters:
-      builder: npm
-    provides:
-      - name: srv-api # required by consumers of CAP services (e.g. approuter)
-        properties:
-          srv-url: ${default-url}
-    requires:
-      - name: EscalationManagement-db
-      - name: EscalationManagement-destination
-
-  - name: EscalationManagement-db-deployer
-    type: hdb
-    path: gen/db
-    parameters:
-      buildpack: nodejs_buildpack
-    requires:
-      - name: EscalationManagement-db
-
-resources:
-  - name: EscalationManagement-db
-    type: com.sap.xs.hdi-container
-    parameters:
-      service: hana
-      service-plan: hdi-shared
-  - name: EscalationManagement-destination
-    type: org.cloudfoundry.managed-service
-    parameters:
-      service: destination
-      service-plan: lite
+  - builder: custom
+    commands:
+    - npx cds build --production

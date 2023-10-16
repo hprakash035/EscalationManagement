@@ -14,7 +14,7 @@ description : String (80);
 material: String(30);
 purchaseOrder : Association to PurchaseOrders;
 expectedDate: Date;
-status: Status;
+status: Status @(Common.Label : 'Status') @readonly ;
 comments: Composition of many Comments on comments.escalation = $self;
 };
 
